@@ -1,16 +1,13 @@
 <script>
-    import { onDestroy } from "svelte";
     import settings from "../stores/settings";
-
-    let colorScheme;
-
-    const unsubscribe = settings.subscribe( val => {
-        colorScheme = val.colorScheme;
-    });
-
-    onDestroy(unsubscribe);
-    
+    import location from "../stores/location";
 </script>
 
 <h2>Home</h2>
-{colorScheme}
+{#if $location && !$location.err}
+    {$location.latitude} {$location.longitude}
+{/if}
+{#if $location && $location.err}
+    {$location.err.message}
+{/if}
+{$settings.colorScheme}
