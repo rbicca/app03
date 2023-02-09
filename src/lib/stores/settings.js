@@ -1,22 +1,33 @@
 import { writable } from "svelte/store";
 
-const settings = writable({
+const defaultSettings = {
     colorScheme: 'dark',
     language: 'en',
     fontSize: 12
-}, (set) => {
-    console.log('construiu');
-    const timer = setTimeout(() => {
-        set({
-            colorScheme: 'light',
-            language: 'en',
-            fontSize: 12
-        });
-    }, 1000);
-    return () => {
-        clearTimeout(timer);
-        console.log('destruiu');
-    };
-});
+};
 
-export default settings;
+const createSettingsStore = () => {
+    const { subscribe, set, update } = writable(defaultSettings);
+    return { 
+        subscribe,
+        set,
+        update,
+        reset: () => {
+            set(defaultSettings);
+        },
+        updateSetting: (setting, value) => {
+            update((old) => ({
+                ...old,
+                [setting]: value
+            }));
+        },
+        toggleScheme: () => {
+            update((old) => ({
+                ...old,
+                colorScheme: old.colorScheme === 'dark' ? 'light' : 'dark'
+            }));
+        }   
+    };
+};
+
+export default createSettingsStore();

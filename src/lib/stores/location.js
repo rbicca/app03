@@ -1,8 +1,10 @@
 import { readable } from "svelte/store";
 
 const location = readable(null, (set) => {
-    if(navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(
+    let watchId;
+    if(navigator.geolocation && navigator.geolocation.watchPosition){
+        
+        watchId = navigator.geolocation.watchPosition(
             (pos) => {
                 console.log(pos);
                 const {latitude ,longitude} = pos.coords;
@@ -16,8 +18,13 @@ const location = readable(null, (set) => {
     }
 
     return () => {
+        if(navigator.geolocation && navigator.geolocation.watchPosition){
+            navigator.geolocation.clearWatch(watchId);
+        }
         set(null);
     }
 });
 
 export default location;
+
+//getCurrentPosition --> Método da geolocation que pega a posição apenas uma vez
